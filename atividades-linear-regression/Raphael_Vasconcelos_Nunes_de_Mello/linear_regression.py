@@ -1,3 +1,7 @@
+# Atividade 02 - Regressão linear
+# Aluno: Raphael Vasconcelos Nunes de Mello
+# Pc: Macbook Pro - M4, memória ram: 24 Gb.
+
 import numpy as np
 import matplotlib.pyplot as plt
 
