@@ -1,0 +1,9 @@
+cd 1
+ipsolve 0 1 > out.txt
+cd ..
+cd 2
+ipsolve 0 1 > out.txt
+cd ..
+cd 4
+ipsolve 0 1 > out.txt
+cd ..

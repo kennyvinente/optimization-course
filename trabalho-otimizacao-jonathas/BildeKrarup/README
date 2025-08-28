@@ -1,0 +1,40 @@
+This package contains Bilde-Krarup-type problems for uncapacitated facility 
+location. There are 441 files in the package:
+
+In each directory there are 20 files. 10 files containing the problem
+instances and 10 files with an optimal solution to each problem.
+The directory structure is as follows:
+
+B
+C
+Dq---\
+     | 
+     1 
+    ...
+     10
+
+
+Eq---\
+     | 
+     1 
+    ... 
+     10
+
+The problem file structure is as follows:
+On the first line there is the filename, and on the second line the number of 
+facilities, cities and a 0. 
+Then on each line we have the data for one of the facilities:
+[number] [opening cost] [cost of connect. city 1] ... [cost of connect. city m]
+
+The optimal solutions are denoted in the following form. For each city there
+is the number of the facility which the city is connected to in the optimal
+solution. Here the first number is for the first city, the second number for
+the second city and so on. The cities are ordered according to their 
+connection costs in the problem file.
+                                                                                      
+
+
+
+
+
+Martin Hoefer, 2002
