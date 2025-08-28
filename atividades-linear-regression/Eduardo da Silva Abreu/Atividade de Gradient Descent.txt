@@ -1,0 +1,128 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
+def gradient_step(x, grad, alpha):
+    """Executa um passo simples de gradiente descendente."""
+    return x - alpha * grad
+
+def backtracking_line_search(f, grad_f, x, grad, alpha_init=1.0, c=1e-4, rho=0.5, max_iter=20):
+    """Encontra passo alpha que satisfaz condição de Armijo (linha de busca simples)."""
+    alpha = alpha_init
+    fx = f(x)
+    for _ in range(max_iter):
+        if f(x - alpha * grad) <= fx - c * alpha * np.dot(grad, grad):
+            return alpha
+        alpha *= rho
+    return alpha  # retorna o menor alpha testado caso não satisfaça
+
+def gradient_descent_v2(
+    f,
+    grad_f,
+    x0,
+    alpha=0.01,
+    max_steps=1000,
+    tolerance=1e-5,
+    alpha_type='fixed',  # 'fixed' ou 'backtracking'
+    use_momentum=False,
+    momentum_beta=0.9,
+    verbose=False,
+    callback=None
+):
+    """
+    Gradient descent com opções de passo fixo, linha de busca e momentum.
+    
+    Parâmetros:
+    -----------
+    f : função objetivo
+    grad_f : gradiente da função
+    x0 : ponto inicial (np.array)
+    alpha : passo inicial
+    max_steps : máximo de iterações
+    tolerance : critério de parada
+    alpha_type : 'fixed' ou 'backtracking'
+    use_momentum : se True, usa momentum
+    momentum_beta : coeficiente do momentum
+    verbose : imprime progresso
+    callback : função chamada a cada iteração (recebe x, f(x), grad)
+    
+    Retorna:
+    --------
+    x_final, lista de valores de f, lista do caminho (iterados)
+    """
+    x = np.array(x0, dtype=np.float64)
+    path = [x.copy()]
+    f_values = [f(x)]
+    velocity = np.zeros_like(x)
+    
+    for step in range(max_steps):
+        grad = grad_f(x)
+        
+        # Escolhe alpha
+        if alpha_type == 'backtracking':
+            alpha_used = backtracking_line_search(f, grad_f, x, grad, alpha_init=alpha)
+        else:
+            alpha_used = alpha
+        
+        if use_momentum:
+            velocity = momentum_beta * velocity + alpha_used * grad
+            x_new = x - velocity
+        else:
+            x_new = x - alpha_used * grad
+        
+        f_new = f(x_new)
+        
+        # Registro e callback
+        path.append(x_new.copy())
+        f_values.append(f_new)
+        if callback is not None:
+            callback(x_new, f_new, grad)
+        if verbose:
+            print(f"Step {step+1}: f={f_new:.6f}, |grad|={np.linalg.norm(grad):.6f}, alpha={alpha_used:.5f}")
+        
+        # Critério de parada
+        if np.linalg.norm(x_new - x) < tolerance:
+            break
+        
+        x = x_new
+    
+    return x, f_values, path
+
+# --- Funções de teste e gradientes (exemplo) ---
+
+def f_test(X):
+    x, y = X
+    return (x - 3)**2 + (y + 1)**2 + 5
+
+def grad_f_test(X):
+    x, y = X
+    return np.array([2*(x-3), 2*(y+1)])
+
+# --- Exemplo de uso ---
+
+if __name__ == "__main__":
+    x0 = np.array([0.0, 0.0])
+    
+    x_opt, f_vals, traj = gradient_descent_v2(
+        f_test,
+        grad_f_test,
+        x0,
+        alpha=0.1,
+        max_steps=100,
+        tolerance=1e-6,
+        alpha_type='backtracking',
+        use_momentum=True,
+        momentum_beta=0.8,
+        verbose=True
+    )
+    
+    print(f"\nÓtimo encontrado em: {x_opt}")
+    print(f"Valor mínimo: {f_vals[-1]}")
+    
+    # Plot da convergência
+    plt.plot(f_vals)
+    plt.xlabel("Iteração")
+    plt.ylabel("f(x)")
+    plt.title("Convergência do Gradient Descent v2")
+    plt.grid(True)
+    plt.show()
